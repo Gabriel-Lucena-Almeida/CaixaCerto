@@ -1,87 +1,185 @@
-# CaixaCerto (base do aplicativo)
+# CaixaCerto
 
-Gestão financeira simples para jovens autônomos e microempreendedores: registra entradas e saídas, separa **negócio** e **pessoal** e mostra quanto **sobrou de verdade** no mês.
+Gestão financeira simples para autônomos e microempreendedores: registra entradas e saídas, separa **negócio** e **pessoal** e mostra quanto **sobrou de verdade** no mês.
 
-Projeto da disciplina de Engenharia de Software (UFPB, Campus IV). Esta é a base do MVP (histórias US01 a US05 do backlog), em **Java puro, sem frameworks e sem bibliotecas externas**.
+---
 
-## Como rodar
+## Stack Tecnológica
 
-Você só precisa do **JDK 17 ou mais novo** (`java -version` e `javac -version` devem funcionar).
+### Backend
+- **Java 21** + **Spring Boot 3.3**
+- **Spring Data JPA** + **Hibernate**
+- **Spring Security** + **JWT** (access + refresh tokens)
+- **SQLite** (arquivo único, zero config)
+- **Flyway** (migrations)
+- **MapStruct** (DTO ↔ Entity)
+- **Lombok** (boilerplate reduction)
+- **Springdoc OpenAPI** (Swagger UI)
+- **Maven** (build)
 
-**Windows:** dê dois cliques em `rodar.bat` (ou rode no terminal).
-**Linux / macOS:** `chmod +x rodar.sh` e depois `./rodar.sh`.
+### Frontend
+- **React 18** + **TypeScript** + **Vite**
+- **Tailwind CSS** (design system)
+- **React Router v6** (rotas)
+- **TanStack Query v5** (cache, loading, mutation)
+- **React Hook Form** + **Zod** (formulários + validação)
+- **Axios** (HTTP client com interceptors)
+- **Recharts** (gráficos)
+- **Lucide React** (ícones)
+- **date-fns** (datas)
+- **Vitest** + **Testing Library** (testes)
 
-Depois abra **http://localhost:8080**.
+---
 
-### Conta de demonstração (para o pitch)
-
-Rode com `--demo` para criar uma conta com dados **fictícios** (os mesmos números das telas do protótipo):
+## Estrutura do Projeto
 
 ```
-rodar.bat --demo        (Windows)
-./rodar.sh --demo       (Linux/macOS)
+caixacerto/
+├── docker-compose.yml          # Sobe tudo (opcional)
+├── backend/                    # Spring Boot API
+│   ├── pom.xml
+│   ├── Dockerfile
+│   └── src/main/
+│       ├── java/br/ufpb/caixacerto/
+│       │   ├── CaixacertoApplication.java
+│       │   ├── config/         # Security, OpenAPI, DemoDataLoader
+│       │   ├── auth/           # JWT, Login, Register
+│       │   ├── user/           # User entity, repository, service
+│       │   ├── movement/       # Movement entity, repository, service, controller
+│       │   └── common/         # Enums, utils (MoneyUtils), exceptions
+│       └── resources/
+│           ├── application.yml
+│           └── db/migration/   # Flyway SQL migrations
+└── frontend/                   # React + Vite
+    ├── package.json
+    ├── vite.config.ts
+    ├── tailwind.config.js
+    ├── tsconfig.json
+    ├── index.html
+    ├── Dockerfile.dev
+    └── src/
+        ├── main.tsx
+        ├── App.tsx
+        ├── routes.tsx
+        ├── auth/               # AuthContext, hooks
+        ├── api/                # Axios client, types, React Query hooks
+        ├── pages/              # Login, Register, Home, MovementForm, Summary, Settings
+        ├── ui/                 # Button, Input, Card, RadioGroup, Chip, Modal, etc.
+        ├── utils/              # money.ts (port do Dinheiro.java)
+        └── styles/             # globals.css (Tailwind)
 ```
 
-Entre com `demo@caixacerto.local` e a senha `demo1234`. O resumo mostra lucro real de R$ 2.140,00 e sobra do mês de R$ 1.280,00.
+---
 
-Para outra porta: `--porta=9090`.
+## Como Rodar
 
-### Rodando manualmente
+### Pré-requisitos
+- **Java 21** (JDK)
+- **Node.js 20+**
+- **Maven 3.9+** (ou usar wrapper)
+- **Docker** (opcional, para docker-compose)
 
+### Opção 1: Docker Compose (recomendado)
+
+```bash
+docker-compose up --build
 ```
-javac -encoding UTF-8 -d out src/br/ufpb/caixacerto/*.java
-java -Dfile.encoding=UTF-8 -cp out br.ufpb.caixacerto.Main --demo
+
+- Backend: http://localhost:8080/api
+- Frontend: http://localhost:5173
+- Swagger UI: http://localhost:8080/api/swagger-ui.html
+
+### Opção 2: Desenvolvimento Local
+
+#### Backend
+```bash
+cd backend
+./mvnw spring-boot:run
+# Ou com demo data:
+./mvnw spring-boot:run -Dspring-boot.run.arguments=--demo
 ```
 
-## As 4 telas
+#### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-| Tela | Endereço | Histórias |
-|---|---|---|
-| Entrar | `/entrar` | US01 |
-| Criar conta (nome, e-mail, senha, confirmação e consentimento) | `/cadastro` | US01 |
-| Início (aba Negócio e Pessoal, últimas movimentações) | `/` | visão geral |
-| Registrar movimentação | `/registrar` | US02, US03, US04 |
-| Resumo do mês (lucro real) | `/resumo` | US05 |
+---
 
-Também existem **Sair** e **Excluir minha conta** (que apaga a conta e todas as movimentações).
+## Variáveis de Ambiente
 
-## Como o código está organizado
+### Backend (`backend/src/main/resources/application.yml` ou env vars)
+```yaml
+app:
+  jwt:
+    secret: "base64-encoded-secret-min-32-chars"  # Gere com: openssl rand -base64 32
+    expiration: 86400000        # 24h
+    refresh-expiration: 604800000  # 7 dias
+  cors:
+    allowed-origins: "http://localhost:5173,http://localhost:3000"
+```
 
-Pasta `src/br/ufpb/caixacerto/`:
+### Frontend (`frontend/.env`)
+```env
+VITE_API_URL=http://localhost:8080/api
+```
 
-| Arquivo | O que faz |
-|---|---|
-| `Main.java` | Liga o servidor; opção `--demo` |
-| `Servidor.java` | Rotas, sessão por cookie, validação dos formulários |
-| `Paginas.java` | HTML e CSS das telas |
-| `Repositorio.java` | Guarda usuários e movimentações (arquivos na pasta `dados/`) |
-| `Resumo.java` | A conta do mês: lucro real = entradas do negócio − saídas do negócio |
-| `Movimento.java` | Uma entrada ou saída (negócio ou pessoal) |
-| `Dinheiro.java` | Converte "1.250,50" em centavos e formata "R$ 1.250,50" |
-| `Seguranca.java` | Senha com hash PBKDF2 e token de sessão aleatório |
+---
 
-Os valores são guardados em **centavos** (`long`), para não ter erro de arredondamento.
+## Endpoints da API
 
-## Dados pedidos no cadastro
+### Autenticação
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/auth/login` | Login (retorna access + refresh token) |
+| POST | `/api/auth/register` | Cadastro |
+| POST | `/api/auth/refresh` | Renovar access token |
 
-Só o necessário: **nome, e-mail e senha** (com confirmação), e o aceite do uso dos dados. Não pedimos CPF nem outros documentos, de propósito: o app não precisa deles no MVP, e guardar menos dados reduz o risco para quem usa (histórias éticas de privacidade e consentimento).
+### Movimentações
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/movements` | Lista com filtros (type, nature, date range, pagination) |
+| GET | `/api/movements/recent?type=NEGOCIO` | Últimas 3 por tipo |
+| GET | `/api/movements/{id}` | Detalhe |
+| POST | `/api/movements` | Criar |
+| PUT | `/api/movements/{id}` | Atualizar |
+| DELETE | `/api/movements/{id}` | Excluir |
+| GET | `/api/movements/summary?month=2024-01` | Resumo do mês |
 
-## O que já está seguro
+### Health Check
+| Método | Rota |
+|--------|------|
+| GET | `/api/actuator/health` |
 
-- O servidor escuta **só em localhost** (`127.0.0.1`); outros computadores da rede não acessam.
-- Senhas guardadas com **PBKDF2 + sal** (nunca em texto aberto).
-- Cada usuário só vê as próprias movimentações.
-- Textos digitados são **escapados** no HTML (sem injeção de código).
-- Cookie de sessão `HttpOnly` e `SameSite=Lax`; cabeçalhos de segurança nas respostas.
-- Excluir a conta apaga os dados (história ética UE06).
+---
 
-## O que fica para as próximas sprints
+## Funcionalidades (MVP - US01 a US05)
 
-- Trocar os arquivos de `dados/` por um banco (SQLite ou PostgreSQL), mantendo os métodos do `Repositorio`.
-- Limite de tentativas de login, token anti-CSRF e HTTPS antes de publicar na internet.
-- Histórias US06 a US12: categorias próprias, histórico por período, metas, lembretes, gráficos, dicas e relatório em PDF.
-- Testes automatizados (JUnit) para `Dinheiro` e `Resumo`.
+- ✅ **Login / Cadastro** com consentimento LGPD
+- ✅ **Separação Negócio vs Pessoal** em todas as telas
+- ✅ **Registrar movimentação**: entrada/saída, tipo, categoria, valor, descrição, data
+- ✅ **Início** com abas Negócio/Pessoal + últimas 3 movimentações
+- ✅ **Resumo do mês**: lucro real (entradas - saídas do negócio) + sobra total
+- ✅ **Excluir conta** (apaga tudo - UE06)
+- ✅ **Segurança**: JWT HttpOnly, BCrypt, CORS, CSP, validação server-side
 
-Contas criadas antes da página de cadastro (sem nome) continuam funcionando.
+---
 
-A pasta `dados/` é criada ao rodar e **não deve ir para o GitHub** (já está no `.gitignore`).
+## Próximas Sprints (US06-US12)
+
+- [ ] Categorias personalizadas
+- [ ] Histórico por período / filtros avançados
+- [ ] Metas / orçamentos
+- [ ] Lembretes / recorrência
+- [ ] Gráficos avançados (evolução temporal, comparação)
+- [ ] Dicas / insights baseados nos dados
+- [ ] Exportar PDF
+- [ ] Testes automatizados (JUnit + Testcontainers / Vitest)
+
+---
+
+## Licença
+
+MIT

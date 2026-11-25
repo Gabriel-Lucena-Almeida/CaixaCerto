@@ -1,0 +1,26 @@
+# Build output
+target/
+
+# IDE
+.vscode
+.idea
+*.iml
+
+# OS
+.DS_Store
+
+# Database
+data/
+*.db
+*.sqlite
+
+# Logs
+*.log
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Environment
+.env
