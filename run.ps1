@@ -30,11 +30,11 @@ function Test-Command($cmd, $name, $versionFlag = "--version") {
     try {
         $result = & $cmd $versionFlag 2>$null
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "  [OK] $name: $($result.Trim())" -ForegroundColor Green
+            Write-Host "  [OK] ${name}: $($result.Trim())" -ForegroundColor Green
             return $true
         }
     } catch {}
-    Write-Host "  [FALHA] $name: NAO ENCONTRADO" -ForegroundColor Red
+    Write-Host "  [FALHA] ${name}: NAO ENCONTRADO" -ForegroundColor Red
     return $false
 }
 
