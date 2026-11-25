@@ -9,7 +9,8 @@
       "projectName": "caixacerto-api",
       "args": ["--demo"],
       "cwd": "${workspaceFolder}/backend",
-      "vmArgs": "-Dspring.profiles.active=dev"
+      "vmArgs": "-Dspring.profiles.active=dev",
+      "console": "internalConsole"
     },
     {
       "name": "CaixaCerto: Frontend (Debug)",
