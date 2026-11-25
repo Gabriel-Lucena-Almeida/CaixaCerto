@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "CaixaCerto: Backend (Debug)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "br.ufpb.caixacerto.CaixacertoApplication",
+      "projectName": "caixacerto-api",
+      "args": ["--demo"],
+      "cwd": "${workspaceFolder}/backend",
+      "vmArgs": "-Dspring.profiles.active=dev"
+    },
+    {
+      "name": "CaixaCerto: Frontend (Debug)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}/frontend",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "CaixaCerto: Full Stack (Debug)",
+      "configurations": [
+        "CaixaCerto: Backend (Debug)",
+        "CaixaCerto: Frontend (Debug)"
+      ],
+      "stopAll": true
+    }
+  ]
+}

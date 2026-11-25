@@ -1,4 +1,28 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.maven.userSettings": "${workspaceFolder}/backend/settings.xml",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.debug.settings.onBuildFailureProceed": true,
+  "java.debug.settings.enableRunDebugCodeLens": true,
+  "java.project.sourcePaths": ["backend/src/main/java"],
+  "java.project.outputPath": "backend/target/classes",
+  "java.project.referencedLibraries": [
+    "backend/target/classes",
+    "backend/target/dependency/*.jar"
+  ],
+  "maven.executable.preferMavenWrapper": true,
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "files.encoding": "utf8",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

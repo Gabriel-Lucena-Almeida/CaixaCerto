@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "vscjava.vscode-java-pack",
+    "redhat.java",
+    "vscjava.vscode-spring-boot-dashboard",
+    "vscjava.vscode-spring-initializr",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "usernamehw.errorlens"
+  ]
+}
